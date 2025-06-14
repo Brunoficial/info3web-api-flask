@@ -25,11 +25,12 @@ class Usuario(db.Model):
     
     @staticmethod
     def validateData(data):
+        print("Dados recebidos:", data)
         campos = ["nome", "email", "senha", "matricula"]
         for campo in campos:
             if not data.get(campo):
+                print(f"Esse campo aqui está faltando -> '{campo}'")
                 return False
-            
 
 
     

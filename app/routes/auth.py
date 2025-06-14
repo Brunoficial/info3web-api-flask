@@ -26,7 +26,7 @@ def registro():
     data = request.get_json()
 
     valid = Usuario.validateData(data)
-    if not valid:
+    if valid == False:
         return "Preencha os campos"
 
     novoUsuario = Usuario(data)
