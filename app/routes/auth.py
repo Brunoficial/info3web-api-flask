@@ -13,10 +13,10 @@ def login():
     usuarioLogado = db.session.query(Usuario).filter_by(matricula=matricula).first()
 
     if not usuarioLogado:
-        return "Usuário inexistente"
+        return jsonify ({"error": "Usuário inexistente"}), 404
 
     if not usuarioLogado.senha == senha:
-        return "Senha incorreta"
+        return jsonify({"error": "Senha incorreta"}), 403
 
     return jsonify(usuarioLogado.to_dict())
     
@@ -24,13 +24,20 @@ def login():
 @authBP.route("/registro", methods=["POST"])
 def registro():
     data = request.get_json()
-
+    
     valid = Usuario.validateData(data)
     if valid == False:
-        return "Preencha os campos"
+        return jsonify({"error": "Preencha os campos"}), 400
+
+    usuarioBancoEmail = db.session.query(Usuario).filter_by(email=data.get("email")).first()
+    usuarioBancoMatricula = db.session.query(Usuario).filter_by(matricula=data.get("matricula")).first()
+    
+    if usuarioBancoMatricula or usuarioBancoEmail:
+        return jsonify({"error": "Matrícula e/ou email já registrados"}), 409
+
 
     novoUsuario = Usuario(data)
     db.session.add(novoUsuario)
     db.session.commit()
 
-    return "Usuário cadastrado"
+    return jsonify({"message": "Usuário cadastrado"}), 200
