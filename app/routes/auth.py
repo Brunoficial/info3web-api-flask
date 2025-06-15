@@ -3,6 +3,7 @@ from ..models import Usuario
 from ..config.db import db
 from ..repositories import usuarioRepository
 
+
 authBP = Blueprint("auth", __name__, url_prefix="/auth")
 
 @authBP.route("/login", methods=["POST"])
@@ -15,7 +16,7 @@ def login():
     if not usuarioLogado:
         return jsonify ({"error": "Usuário inexistente"}), 404
 
-    if not usuarioLogado.senha == senha:
+    if not usuarioLogado.check_password(senha):
         return jsonify({"error": "Senha incorreta"}), 403
 
     return jsonify(usuarioLogado.to_dict())

@@ -1,4 +1,5 @@
 from ..config.db import db
+from ..config.extensions import bcrypt
 
 class Usuario(db.Model):
     __tablename__ = "usuarios"
@@ -6,13 +7,13 @@ class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(200), nullable=False, unique=True)
-    senha = db.Column(db.String(60), nullable=False)
+    senha = db.Column(db.String(260), nullable=False)
     matricula = db.Column(db.String(14), nullable=False, unique=True)
 
     def __init__(self, data):
         self.nome = data.get("nome")
         self.email = data.get("email")
-        self.senha = data.get("senha")
+        self.senha = bcrypt.generate_password_hash(data.get("senha"))
         self.matricula = data.get("matricula") 
 
     def to_dict(self):
@@ -22,6 +23,12 @@ class Usuario(db.Model):
             "email": self.email,
             "matricula": self.matricula
         }
+
+    def set_password(self, senha):
+        self.senha = bcrypt.generate_password_hash(senha)
+
+    def check_password(self, senha):
+        return bcrypt.check_password_hash(self.senha, senha)
     
     @staticmethod
     def validateData(data):
