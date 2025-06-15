@@ -1,7 +1,7 @@
 from flask import request, Blueprint, jsonify
 from ..models import Usuario
 from ..config.db import db
-
+from ..repositories import usuarioRepository
 
 authBP = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -10,7 +10,7 @@ def login():
     matricula = request.get_json().get("matricula")
     senha = request.get_json().get("senha")
 
-    usuarioLogado = db.session.query(Usuario).filter_by(matricula=matricula).first()
+    usuarioLogado = usuarioRepository.find_by_matricula(matricula)
 
     if not usuarioLogado:
         return jsonify ({"error": "Usuário inexistente"}), 404
@@ -29,15 +29,14 @@ def registro():
     if valid == False:
         return jsonify({"error": "Preencha os campos"}), 400
 
-    usuarioBancoEmail = db.session.query(Usuario).filter_by(email=data.get("email")).first()
-    usuarioBancoMatricula = db.session.query(Usuario).filter_by(matricula=data.get("matricula")).first()
+    usuarioBancoEmail = usuarioRepository.find_by_email(data.get("email"))
+    usuarioBancoMatricula = usuarioRepository.find_by_matricula(data.get("matricula"))
     
     if usuarioBancoMatricula or usuarioBancoEmail:
         return jsonify({"error": "Matrícula e/ou email já registrados"}), 409
 
 
     novoUsuario = Usuario(data)
-    db.session.add(novoUsuario)
-    db.session.commit()
+    usuarioRepository.save(novoUsuario)
 
     return jsonify({"message": "Usuário cadastrado"}), 200
