@@ -1,8 +1,7 @@
 from flask import request, Blueprint, jsonify
 from ..models import Usuario
-from ..config.db import db
 from ..repositories import usuarioRepository
-
+from flask_jwt_extended import create_access_token
 
 authBP = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -19,7 +18,7 @@ def login():
     if not usuarioLogado.check_password(senha):
         return jsonify({"error": "Senha incorreta"}), 403
 
-    return jsonify(usuarioLogado.to_dict())
+    return jsonify({"usuario": usuarioLogado.to_dict(), "token": create_access_token(identity=matricula)})
     
 
 @authBP.route("/registro", methods=["POST"])

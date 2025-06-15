@@ -2,6 +2,9 @@ from flask import Flask
 from .config.db import db, create_db  
 from .routes import register_routes
 from .config.extensions import init_extensions
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def createApp() :
     app = Flask(__name__)
