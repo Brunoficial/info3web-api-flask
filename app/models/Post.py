@@ -10,11 +10,10 @@ class Post(db.Model):
     data = db.Column (db.Date, nullable=False, default=date.today)
     autor_id = db.Column(db.ForeignKey("usuarios.id"), nullable=False)
 
-    def __init__(self, titulo, conteudo, data, autor_id):
-        self.titulo = titulo 
-        self.conteudo = conteudo 
-        self.data = data 
-        self.autor_id = autor_id
+    def __init__(self, data):
+        self.titulo = data.get("titulo") 
+        self.conteudo = data.get("conteudo") 
+        self.autor_id = data.get("autor_id")
 
     def to_dict(self):
         return {
@@ -24,4 +23,13 @@ class Post(db.Model):
             "data": self.data, 
             "autor_id": self.autor_id
         }
+    
+    @staticmethod
+    def validate_data(data):
+        campos = ["titulo", "conteudo", "autor_id"]
+        for campo in campos:
+            if not data.get(campo):
+                return False
+
+        
         

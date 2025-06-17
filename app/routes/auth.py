@@ -25,7 +25,7 @@ def login():
 def registro():
     data = request.get_json()
     
-    valid = Usuario.validateData(data)
+    valid = Usuario.validate_data(data)
     if valid == False:
         return jsonify({"error": "Preencha os campos"}), 400
 

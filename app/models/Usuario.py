@@ -31,7 +31,7 @@ class Usuario(db.Model):
         return bcrypt.check_password_hash(self.senha, senha)
     
     @staticmethod
-    def validateData(data):
+    def validate_data(data):
         campos = ["nome", "email", "senha", "matricula"]
         for campo in campos:
             if not data.get(campo):

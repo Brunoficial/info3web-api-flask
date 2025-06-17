@@ -1,6 +1,14 @@
 from ..config.db import db 
 from ..models.Post import Post
 
+def list_posts():
+    posts = db.session.query(Post).all()
+    return posts
+
+def find_by_id(id):
+    post = db.session.query(Post).filter_by(id=id).first()
+    return post
+
 def find_by_autor(autor_id):
     posts = db.session.query(Post).filter_by(autor_id=autor_id).all()
     return posts
@@ -13,6 +21,11 @@ def find_by_data(data):
     posts = db.session.query(Post).filter_by(data=data).all()
     return posts
 
-def save_post(post):
+def save(post):
     db.session.add(post)
     db.session.commit()
+
+def delete(post):
+    db.session.delete(post)
+    db.session.commit()
+
