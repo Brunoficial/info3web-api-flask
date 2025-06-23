@@ -9,19 +9,22 @@ class Usuario(db.Model):
     email = db.Column(db.String(200), nullable=False, unique=True)
     senha = db.Column(db.String(260), nullable=False)
     matricula = db.Column(db.String(14), nullable=False, unique=True)
+    data_nascimento = db.Column(db.Date, nullable=True)
 
     def __init__(self, data):
         self.nome = data.get("nome")
         self.email = data.get("email")
         self.senha = bcrypt.generate_password_hash(data.get("senha"))
         self.matricula = data.get("matricula") 
+        self.data_nascimento = data.get("data_nascimento")
 
     def to_dict(self):
         return {
             "id": self.id,
             "nome": self.nome,
             "email": self.email,
-            "matricula": self.matricula
+            "matricula": self.matricula,
+            "data_nascimento": self.data_nascimento
         }
 
     def set_password(self, senha):
