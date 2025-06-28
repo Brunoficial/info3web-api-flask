@@ -1,5 +1,6 @@
 from ..config.db import db 
 from datetime import date
+from flask import jsonify
 
 class Post(db.Model):
     __tablename__ = "posts"
@@ -9,6 +10,7 @@ class Post(db.Model):
     conteudo = db.Column(db.String(1000), nullable=False)
     data = db.Column (db.Date, nullable=False, default=date.today)
     autor_id = db.Column(db.ForeignKey("usuarios.id"), nullable=False)
+    hashtags = db.relationship('Hashtag', secondary='posts_hashtags', backref='posts', lazy='select')
 
     def __init__(self, data):
         self.titulo = data.get("titulo") 
@@ -21,9 +23,18 @@ class Post(db.Model):
             "titulo": self.titulo,
             "conteudo": self.conteudo,
             "data": self.data, 
-            "autor_id": self.autor_id
+            "autor_id": self.autor_id,
+            "hashtags": self.get_hashtags()
         }
     
+    def get_hashtags(self):
+        hashtags_do_post = []
+
+        for hashtag in self.hashtags:
+            hashtags_do_post.append(hashtag.to_dict())
+
+        return hashtags_do_post
+
     @staticmethod
     def validate_data(data):
         campos = ["titulo", "conteudo", "autor_id"]

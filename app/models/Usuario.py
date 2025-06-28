@@ -9,6 +9,9 @@ class Usuario(db.Model):
     email = db.Column(db.String(200), nullable=False, unique=True)
     senha = db.Column(db.String(260), nullable=False)
     matricula = db.Column(db.String(14), nullable=False, unique=True)
+    data_nascimento = db.Column(db.Date, nullable=True)
+    bio = db.Column(db.String(600), nullable=True)
+    posts = db.relationship('Post', backref='autor', lazy='select')
 
     def __init__(self, data):
         self.nome = data.get("nome")

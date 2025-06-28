@@ -1,5 +1,6 @@
 from ..config.db import db 
 from ..models.Post import Post
+from ..models.Hashtag import Hashtag
 
 def list_posts():
     posts = db.session.query(Post).all()
@@ -19,6 +20,11 @@ def find_by_titulo(titulo):
 
 def find_by_data(data):
     posts = db.session.query(Post).filter_by(data=data).all()
+    return posts
+
+def find_by_hashtag(hashtag):
+    hashtag = "#" + hashtag
+    posts = db.session.query(Post).filter(Post.hashtags.any(Hashtag.nome == hashtag)).all()
     return posts
 
 def save(post):

@@ -1,12 +1,13 @@
 from ..models import Post
 from flask import request, Blueprint, jsonify
 from ..repositories import postRepository
+from ..repositories import hashtagRepository
 from flask_jwt_extended import jwt_required
 
 postBP = Blueprint("post", __name__, url_prefix="/post")
 
 @postBP.route("/listar", methods=["GET"])
-@jwt_required()
+# @jwt_required()
 def listar_posts():
     posts_banco = postRepository.list_posts()
 
@@ -19,22 +20,41 @@ def listar_posts():
 
     return jsonify(posts), 200
 
+@postBP.route("/listar_por_hashtag/<string:hashtag>", methods=["GET"])
+def listar_por_hashtag(hashtag):
+    posts_banco = postRepository.find_by_hashtag(hashtag)
+
+    if not posts_banco:
+        return jsonify({ "error": "Não existem posts com essa hashtag" }), 400
+
+    posts = []
+
+    for post in posts_banco:
+        posts.append(post.to_dict())
+
+    return jsonify(posts), 200
+
 @postBP.route("/criar", methods=["POST"])
-@jwt_required()
+# @jwt_required()
 def criar_post():
     data = request.get_json()
+    hashtags = data.get("hashtags")
 
     valid = Post.validate_data(data)
     if valid == False:
         return ({"error": "Preencha os campos"}), 400
 
     novoPost = Post(data)
+
+    if hashtags:
+        novoPost.hashtags = hashtagRepository.save(hashtags)
+
     postRepository.save(novoPost)
 
     return jsonify({"message":"Post criado com sucesso!"}), 200
 
 @postBP.route("/deletar/<int:id>", methods=["DELETE"])
-@jwt_required()
+# @jwt_required()
 def deletar_post(id):
     post = postRepository.find_by_id(id)
 
@@ -45,11 +65,14 @@ def deletar_post(id):
     return ({"message": "Post deletado com sucesso!!!"}), 200
 
 @postBP.route("/atualizar/<int:id>", methods=["PATCH"])
-@jwt_required()
+# @jwt_required()
 def atualizar_post(id):
     post = postRepository.find_by_id(id)
     data = request.get_json()
 
+    hashtags = data.get("hashtags")
+    hashtags_atualizadas = hashtagRepository.save(hashtags)
+    
     if not post:
         return jsonify ({"error": "Nenhum post encontrado"}), 404
 
@@ -57,6 +80,9 @@ def atualizar_post(id):
     for campo in campos:
         if data.get(campo) != post.__getattribute__(campo):
             post.__setattr__(campo, data.get(campo))
+
+    if hashtags_atualizadas:
+        post.__setattr__("hashtags", hashtags_atualizadas)
     
     postRepository.save(post)
 
