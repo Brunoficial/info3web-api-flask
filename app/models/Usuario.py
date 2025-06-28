@@ -18,13 +18,15 @@ class Usuario(db.Model):
         self.email = data.get("email")
         self.senha = bcrypt.generate_password_hash(data.get("senha"))
         self.matricula = data.get("matricula") 
+        self.data_nascimento = data.get("data_nascimento")
 
     def to_dict(self):
         return {
             "id": self.id,
             "nome": self.nome,
             "email": self.email,
-            "matricula": self.matricula
+            "matricula": self.matricula,
+            "data_nascimento": self.data_nascimento
         }
 
     def set_password(self, senha):
