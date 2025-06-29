@@ -2,8 +2,14 @@ from flask import request, Blueprint, jsonify
 from ..models import Usuario
 from ..repositories import usuarioRepository
 from flask_jwt_extended import create_access_token
+from flask import abort
 
 authBP = Blueprint("auth", __name__, url_prefix="/auth")
+
+def validar_user(data):
+    valid = Usuario.validate_data(data)
+    if valid == False:
+        abort(400, description="Preencha os campos")
 
 @authBP.route("/login", methods=["POST"])
 def login():
@@ -24,10 +30,7 @@ def login():
 @authBP.route("/registro", methods=["POST"])
 def registro():
     data = request.get_json()
-    
-    valid = Usuario.validate_data(data)
-    if valid == False:
-        return jsonify({"error": "Preencha os campos"}), 400
+    validar_user(data)
 
     usuarioBancoEmail = usuarioRepository.find_by_email(data.get("email"))
     usuarioBancoMatricula = usuarioRepository.find_by_matricula(data.get("matricula"))

@@ -3,49 +3,53 @@ from flask import request, Blueprint, jsonify
 from ..repositories import postRepository
 from ..repositories import hashtagRepository
 from flask_jwt_extended import jwt_required
+from flask import abort
 
 postBP = Blueprint("post", __name__, url_prefix="/post")
 
+
+# Funções auxiliares
+def serializar_posts(posts_do_banco):
+    return [post.to_dict() for post in posts_do_banco]
+
+def validar_dados(data):
+    valid = Post.validate_data(data)
+    if valid == False:
+        abort(400, description="Preencha os campos obrigatórios")
+
+# Rotas
 @postBP.route("/listar", methods=["GET"])
 # @jwt_required()
 def listar_posts():
-    posts_banco = postRepository.list_posts()
+    posts_do_banco = postRepository.list_posts()
 
-    if not posts_banco:
-        return jsonify ({"error": "Nenhum post encontrado"}), 404
+    posts = serializar_posts(posts_do_banco)
+    if not posts:
+        return ({"error": "Nenhum post encontrado"}), 404
     
-    posts = []
-    for post in posts_banco:
-        posts.append(post.to_dict())
-
     return jsonify(posts), 200
+
 
 @postBP.route("/listar_por_hashtag/<string:hashtag>", methods=["GET"])
 def listar_por_hashtag(hashtag):
-    posts_banco = postRepository.find_by_hashtag(hashtag)
+    posts_do_banco = postRepository.find_by_hashtag(hashtag)
 
-    if not posts_banco:
-        return jsonify({ "error": "Não existem posts com essa hashtag" }), 400
-
-    posts = []
-
-    for post in posts_banco:
-        posts.append(post.to_dict())
-
+    posts = serializar_posts(posts_do_banco)
+    if not posts:
+        return ({"error": "Nenhum post encontrado"}), 404
+    
     return jsonify(posts), 200
+
 
 @postBP.route("/criar", methods=["POST"])
 # @jwt_required()
 def criar_post():
     data = request.get_json()
-    hashtags = data.get("hashtags")
-
-    valid = Post.validate_data(data)
-    if valid == False:
-        return ({"error": "Preencha os campos"}), 400
+    validar_dados(data)
 
     novoPost = Post(data)
 
+    hashtags = data.get("hashtags")
     if hashtags:
         novoPost.hashtags = hashtagRepository.save(hashtags)
 
@@ -53,36 +57,40 @@ def criar_post():
 
     return jsonify({"message":"Post criado com sucesso!"}), 200
 
+
 @postBP.route("/deletar/<int:id>", methods=["DELETE"])
 # @jwt_required()
 def deletar_post(id):
     post = postRepository.find_by_id(id)
-
     if not post:
         return jsonify ({"error": "Nenhum post encontrado"}), 404
 
     postRepository.delete(post)
     return ({"message": "Post deletado com sucesso!!!"}), 200
 
+
 @postBP.route("/atualizar/<int:id>", methods=["PATCH"])
 # @jwt_required()
 def atualizar_post(id):
     post = postRepository.find_by_id(id)
-    data = request.get_json()
-
-    hashtags = data.get("hashtags")
-    hashtags_atualizadas = hashtagRepository.save(hashtags)
-    
     if not post:
         return jsonify ({"error": "Nenhum post encontrado"}), 404
+    
+    data = request.get_json()
+    validar_dados(data)
 
     campos = ["titulo", "conteudo"]
     for campo in campos:
-        if data.get(campo) != post.__getattribute__(campo):
-            post.__setattr__(campo, data.get(campo))
+        valor_atualizado = data.get(campo)
+
+        if valor_atualizado != getattr(post, campo):
+            setattr(post, campo, valor_atualizado)
+
+    hashtags = data.get("hashtags")
+    hashtags_atualizadas = hashtagRepository.save(hashtags)
 
     if hashtags_atualizadas:
-        post.__setattr__("hashtags", hashtags_atualizadas)
+        setattr(post, "hashtags", hashtags_atualizadas)
     
     postRepository.save(post)
 
