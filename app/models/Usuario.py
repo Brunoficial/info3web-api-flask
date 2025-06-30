@@ -11,8 +11,9 @@ class Usuario(db.Model):
     senha = db.Column(db.String(260), nullable=False)
     matricula = db.Column(db.String(14), nullable=False, unique=True)
     data_nascimento = db.Column(db.Date, nullable=True)
+    data_registro = db.Column(db.Datetime, nullable=False, default=datetime.now())
     bio = db.Column(db.String(600), nullable=True)
-    posts = db.relationship('Post', backref='autor', lazy='select')
+    posts = db.relationship('Post', backref='autor', cascade='all, delete', lazy='select')
 
     def __init__(self, data):
         self.nome = data.get("nome")

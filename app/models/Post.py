@@ -1,5 +1,5 @@
 from ..config.db import db 
-from datetime import date
+from datetime import date, datetime
 from flask import jsonify
 
 class Post(db.Model):
@@ -8,9 +8,11 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(30), nullable=False)
     conteudo = db.Column(db.String(1000), nullable=False)
-    data = db.Column (db.Date, nullable=False, default=date.today)
+    data = db.Column (db.Datetime, nullable=False, default=datetime.now())
     autor_id = db.Column(db.ForeignKey("usuarios.id"), nullable=False)
     hashtags = db.relationship('Hashtag', secondary='posts_hashtags', backref='posts', lazy='select')
+    comentarios = db.relationship('Comentario', backref='post', cascade='all, delete', lazy='select')
+    curtidas = db.Column(db.Integer, default=0)
 
     def __init__(self, data):
         self.titulo = data.get("titulo") 
