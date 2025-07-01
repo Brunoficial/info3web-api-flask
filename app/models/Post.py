@@ -38,12 +38,7 @@ class Post(db.Model):
 
         return hashtags_do_post
 
-    @staticmethod
-    def validate_data(data):
-        campos = ["titulo", "conteudo", "autor_id"]
-        for campo in campos:
-            if not data.get(campo):
-                return False
+
 
         
         

@@ -3,19 +3,9 @@ from flask import request, Blueprint, jsonify
 from ..repositories import postRepository
 from ..repositories import hashtagRepository
 from flask_jwt_extended import jwt_required
-from flask import abort
+from ..utils import *
 
 postBP = Blueprint("post", __name__, url_prefix="/post")
-
-
-# Funções auxiliares
-def serializar_posts(posts_do_banco):
-    return [post.to_dict() for post in posts_do_banco]
-
-def validar_dados(data):
-    valid = Post.validate_data(data)
-    if valid == False:
-        abort(400, description="Preencha os campos obrigatórios")
 
 # Rotas
 @postBP.route("/listar", methods=["GET"])
@@ -23,7 +13,7 @@ def validar_dados(data):
 def listar_posts():
     posts_do_banco = postRepository.list_posts()
 
-    posts = serializar_posts(posts_do_banco)
+    posts = serializar_itens(posts_do_banco)
     if not posts:
         return ({"error": "Nenhum post encontrado"}), 404
     
@@ -34,7 +24,7 @@ def listar_posts():
 def listar_por_hashtag(hashtag):
     posts_do_banco = postRepository.find_by_hashtag(hashtag)
 
-    posts = serializar_posts(posts_do_banco)
+    posts = serializar_itens(posts_do_banco)
     if not posts:
         return ({"error": "Nenhum post encontrado"}), 404
     
@@ -45,7 +35,9 @@ def listar_por_hashtag(hashtag):
 # @jwt_required()
 def criar_post():
     data = request.get_json()
-    validar_dados(data)
+    valid = validar_dados(data, ["titulo", "conteudo", "autor_id"])
+    if valid == False:
+        return jsonify({"error": "Preencha os campos obrigatórios"}), 400
 
     novoPost = Post(data)
 
@@ -77,14 +69,11 @@ def atualizar_post(id):
         return jsonify ({"error": "Nenhum post encontrado"}), 404
     
     data = request.get_json()
-    validar_dados(data)
+    valid = validar_dados(data, ["titulo", "conteudo", "autor_id"])
+    if valid == False:
+        return jsonify({"error": "Preencha os campos obrigatórios"}), 400
 
-    campos = ["titulo", "conteudo"]
-    for campo in campos:
-        valor_atualizado = data.get(campo)
-
-        if valor_atualizado != getattr(post, campo):
-            setattr(post, campo, valor_atualizado)
+    editar_dados(["titulo", "conteudo", "autor_id"], data, post)
 
     hashtags = data.get("hashtags")
     hashtags_atualizadas = hashtagRepository.save(hashtags)

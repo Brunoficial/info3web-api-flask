@@ -24,10 +24,3 @@ class Comentario(db.Model):
             "post_id": self.post_id
         }
     
-    @staticmethod
-    def validate_data(data):
-        campos = ["conteudo", "autor_id"]
-        for campo in campos:
-            if not data.get(campo):
-                return False
-    
