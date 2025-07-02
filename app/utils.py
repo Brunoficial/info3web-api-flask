@@ -1,3 +1,12 @@
+def serializar_itens(itens_do_banco):
+    itens = [item.to_dict() for item in itens_do_banco]
+    return itens 
+
+def validar_dados(data, campos):
+    for campo in campos:
+        if not data.get(campo):
+            return False
+        
 def editar_dados(campos, data, objeto):
     novos_valores=[]
     valores_antigos=[]
@@ -16,11 +25,4 @@ def editar_dados(campos, data, objeto):
 
     return True
 
-def serializar_itens(itens_do_banco):
-    itens = [item.to_dict() for item in itens_do_banco]
-    return itens 
 
-def validar_dados(data, campos):
-    for campo in campos:
-        if not data.get(campo):
-            return False

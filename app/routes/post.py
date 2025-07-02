@@ -75,12 +75,22 @@ def atualizar_post(id):
 
     editar_dados(["titulo", "conteudo", "autor_id"], data, post)
 
-    hashtags = data.get("hashtags")
-    hashtags_atualizadas = hashtagRepository.save(hashtags)
+    # Não dá pra colocar essa parte também dentro da função save?
+    hashtags_strings = data.get("hashtags")
+    hashtags_entidades = hashtagRepository.save(hashtags_strings)
 
-    if hashtags_atualizadas:
-        setattr(post, "hashtags", hashtags_atualizadas)
+    if hashtags_entidades:
+        setattr(post, "hashtags", hashtags_entidades) # Acho que também dava pra fazer post.hashtags = hashtags_entidades
     
     postRepository.save(post)
 
     return jsonify({"message": "Post atualizado com sucesso!!!"}), 200
+
+'''
+Coisas que eu acho que dá pra mudar nessa função de hashtags 
+A função save() do hashtagsRepository está fazendo mais do que ela deveia. Ela deveria ter o estrito 
+propósito de salvar as hashtags no banco. Ela está também atribuindo aos posts, e tá ficando um pouco
+confuso. 
+Ideia: Separar em duas funções, save() e atualizar_hashtags(). E aquela parte de hashtags_strings e
+hashtag_entidades estariam dentro dessa função -> save(hashtags_strings), atualizar_hashtags(data, hashtags_strings)
+'''
