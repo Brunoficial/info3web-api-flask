@@ -37,6 +37,10 @@ class Post(db.Model):
             hashtags_do_post.append(hashtag.to_dict())
 
         return hashtags_do_post
+    
+    @staticmethod
+    def campos_obrigatorios():
+        return ["titulo", "conteudo", "autor_id"]
 
 
 

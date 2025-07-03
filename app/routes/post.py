@@ -35,15 +35,14 @@ def listar_por_hashtag(hashtag):
 # @jwt_required()
 def criar_post():
     data = request.get_json()
-    valid = validar_dados(data, ["titulo", "conteudo", "autor_id"])
-    if valid == False:
+    if validar_dados(data, Post.campos_obrigatorios()) == False:
         return jsonify({"error": "Preencha os campos obrigatórios"}), 400
 
     novoPost = Post(data)
 
     hashtags = data.get("hashtags")
     if hashtags:
-        novoPost.hashtags = hashtagRepository.save(hashtags)
+        novoPost.hashtags = hashtagRepository.processar_hashtags(hashtags)
 
     postRepository.save(novoPost)
 
@@ -69,28 +68,19 @@ def atualizar_post(id):
         return jsonify ({"error": "Nenhum post encontrado"}), 404
     
     data = request.get_json()
-    valid = validar_dados(data, ["titulo", "conteudo", "autor_id"])
-    if valid == False:
+    if validar_dados(data, Post.campos_obrigatorios()) == False:
         return jsonify({"error": "Preencha os campos obrigatórios"}), 400
 
-    editar_dados(["titulo", "conteudo", "autor_id"], data, post)
+    editar_dados(Post.campos_obrigatorios(), data, post)
 
-    # Não dá pra colocar essa parte também dentro da função save?
     hashtags_strings = data.get("hashtags")
-    hashtags_entidades = hashtagRepository.save(hashtags_strings)
+    hashtags_entidades = hashtagRepository.processar_hashtags(hashtags_strings)
 
     if hashtags_entidades:
-        setattr(post, "hashtags", hashtags_entidades) # Acho que também dava pra fazer post.hashtags = hashtags_entidades
-    
+        # setattr(post, "hashtags", hashtags_entidades) # Acho que também dava pra fazer post.hashtags = hashtags_entidades
+        post.hashtags = hashtags_entidades
+
     postRepository.save(post)
 
     return jsonify({"message": "Post atualizado com sucesso!!!"}), 200
 
-'''
-Coisas que eu acho que dá pra mudar nessa função de hashtags 
-A função save() do hashtagsRepository está fazendo mais do que ela deveia. Ela deveria ter o estrito 
-propósito de salvar as hashtags no banco. Ela está também atribuindo aos posts, e tá ficando um pouco
-confuso. 
-Ideia: Separar em duas funções, save() e atualizar_hashtags(). E aquela parte de hashtags_strings e
-hashtag_entidades estariam dentro dessa função -> save(hashtags_strings), atualizar_hashtags(data, hashtags_strings)
-'''

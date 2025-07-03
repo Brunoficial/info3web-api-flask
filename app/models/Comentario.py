@@ -24,3 +24,7 @@ class Comentario(db.Model):
             "post_id": self.post_id
         }
     
+    @staticmethod
+    def campos_obrigatorios():
+        return ["conteudo"]
+    

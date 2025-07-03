@@ -1,7 +1,7 @@
 from ..config.db import db
 from ..models.Comentario import Comentario
 from ..models import Post
-from ..repositories import comentarioRepository
+from ..repositories import comentarioRepository, postRepository
 from ..utils import *
 from flask import jsonify, request, Blueprint
 
@@ -10,7 +10,7 @@ comentarioBP = Blueprint("comentario", __name__, url_prefix="/comentario")
 
 @comentarioBP.route("/listar/<int:post_id>", methods=["GET"])
 def listar_comentarios(post_id):
-    post = db.session.query(Post).filter_by(id=post_id).first()
+    post = postRepository.find_by_id(post_id)
     if not post:
         return jsonify({"error": "Post não encontrado"}), 404
     
@@ -24,11 +24,11 @@ def listar_comentarios(post_id):
 @comentarioBP.route("/criar/<int:post_id>", methods=["POST"])
 def criar_comentario(post_id):
     data = request.get_json()
-    validar_dados(data, ['conteudo', 'autor_id'])
+    validar_dados(data, Comentario.campos_obrigatorios())
     
     novo_comentario = Comentario(data)
 
-    post = db.session.query(Post).filter_by(id=post_id).first()
+    post = postRepository.find_by_id(post_id)
     if not post:
        return jsonify({"error": "Post não encontrado"}), 404
     
@@ -39,7 +39,7 @@ def criar_comentario(post_id):
 
 @comentarioBP.route("/deletar/<int:comentario_id>", methods=["DELETE"])
 def deletar_comentario(comentario_id):
-    comentario = db.session.query(Comentario).filter_by(id=comentario_id).first()
+    comentario = comentarioRepository.find_by_id(comentario_id)
     if not comentario:
         return jsonify({"error": "Comentário não encontrado"}), 404
     
@@ -49,18 +49,17 @@ def deletar_comentario(comentario_id):
 
 @comentarioBP.route("/editar/<int:comentario_id>", methods=['PATCH'])
 def editar_comentario(comentario_id):
-    data = request.get_json()
-    valid = validar_dados(data, ['conteudo', 'autor_id'])
-    if valid == False:
+    data = request.get_json() 
+    if validar_dados(data, Comentario.campos_obrigatorios()) == False:
         return jsonify({"error": "Preencha os campos obrigatórios"}), 400
 
-    comentario = db.session.query(Comentario).filter_by(id=comentario_id).first()
+    comentario = comentarioRepository.find_by_id(comentario_id)
     if not comentario:
         return jsonify({"error": "Esse comentário não foi encontrado"}), 404
     
-    alterado = editar_dados(['conteudo', 'autor_id'], data, comentario) # Substitui aquelas linhas todas
-    if alterado: 
+    if editar_dados(Comentario.campos_obrigatorios(), data, comentario): 
         comentarioRepository.save(comentario)
+        
         return jsonify({"message": "Comentário editado com sucesso!"}), 200
     
     return jsonify({'message': 'Comentário não foi alterado'}), 200
