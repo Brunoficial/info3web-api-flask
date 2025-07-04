@@ -1,3 +1,6 @@
+from flask import session, g
+from .repositories import usuarioRepository
+
 def serializar_itens(itens_do_banco):
     itens = [item.to_dict() for item in itens_do_banco]
     return itens 
@@ -24,5 +27,14 @@ def editar_dados(campos, data, objeto):
         return False
 
     return True
+
+def get_usuario_logado():
+    usuario_id = session.get('usuario_id')
+
+    if usuario_id == None:
+        g.user = None
+    else: 
+        g.user = usuarioRepository.find_by_id(usuario_id)
+
 
 

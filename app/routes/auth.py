@@ -1,8 +1,8 @@
-from flask import request, Blueprint, jsonify
+from flask import request, Blueprint, jsonify, abort, session
 from ..models import Usuario
 from ..repositories import usuarioRepository
 from flask_jwt_extended import create_access_token
-from flask import abort
+from ..utils import *
 
 authBP = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -24,13 +24,16 @@ def login():
     if not usuarioLogado.check_password(senha):
         return jsonify({"error": "Senha incorreta"}), 403
 
+    session.clear()
+    session['usuario_id'] = usuarioLogado.id
     return jsonify({"usuario": usuarioLogado.to_dict(), "token": create_access_token(identity=matricula)})
     
 
 @authBP.route("/registro", methods=["POST"])
 def registro():
     data = request.get_json()
-    validar_user(data)
+    if not validar_dados(Usuario.campos_obrigatorios(), data):
+        return jsonify({"error": "Preencha os campos obrigatórios"}), 400
 
     usuarioBancoEmail = usuarioRepository.find_by_email(data.get("email"))
     usuarioBancoMatricula = usuarioRepository.find_by_matricula(data.get("matricula"))

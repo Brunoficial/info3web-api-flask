@@ -1,6 +1,10 @@
 from ..config.db import db
 from ..models import Usuario
 
+def find_by_id(id):
+    usuario = db.session.query(Usuario).filter_by(id=id).first()
+    return usuario 
+
 def find_by_email(email):
     usuario = db.session.query(Usuario).filter_by(email=email).first()
     return usuario 

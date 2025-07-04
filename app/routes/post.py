@@ -15,10 +15,9 @@ def listar_posts():
 
     posts = serializar_itens(posts_do_banco)
     if not posts:
-        return ({"error": "Nenhum post encontrado"}), 404
+        return jsonify({"error": "Nenhum post encontrado"}), 404
     
     return jsonify(posts), 200
-
 
 @postBP.route("/listar_por_hashtag/<string:hashtag>", methods=["GET"])
 def listar_por_hashtag(hashtag):
@@ -26,10 +25,9 @@ def listar_por_hashtag(hashtag):
 
     posts = serializar_itens(posts_do_banco)
     if not posts:
-        return ({"error": "Nenhum post encontrado"}), 404
+        return jsonify({"error": "Nenhum post encontrado"}), 404
     
     return jsonify(posts), 200
-
 
 @postBP.route("/criar", methods=["POST"])
 # @jwt_required()
@@ -39,35 +37,43 @@ def criar_post():
         return jsonify({"error": "Preencha os campos obrigatórios"}), 400
 
     novoPost = Post(data)
-
     hashtags = data.get("hashtags")
+
     if hashtags:
         novoPost.hashtags = hashtagRepository.processar_hashtags(hashtags)
 
     postRepository.save(novoPost)
-
     return jsonify({"message":"Post criado com sucesso!"}), 200
-
 
 @postBP.route("/deletar/<int:id>", methods=["DELETE"])
 # @jwt_required()
 def deletar_post(id):
     post = postRepository.find_by_id(id)
+    usuario_logado = get_usuario_logado()
+
     if not post:
-        return jsonify ({"error": "Nenhum post encontrado"}), 404
+        return jsonify({"error": "Nenhum post encontrado"}), 404
 
+    if post.autor_id != usuario_logado:
+        return jsonify({"error": "Você não tem permissão para deletar o post de outra pessoa"}), 403
+    
     postRepository.delete(post)
-    return ({"message": "Post deletado com sucesso!!!"}), 200
-
+    return jsonify({"message": "Post deletado com sucesso"}), 200
 
 @postBP.route("/atualizar/<int:id>", methods=["PATCH"])
 # @jwt_required()
 def atualizar_post(id):
     post = postRepository.find_by_id(id)
+    usuario_logado = get_usuario_logado()
+
     if not post:
-        return jsonify ({"error": "Nenhum post encontrado"}), 404
+        return jsonify({"error": "Nenhum post encontrado"}), 404
     
+    if post.autor_id != usuario_logado:
+        return jsonify({"error": "Você não tem permissão para deletar o post de outra pessoa"}), 403
+
     data = request.get_json()
+
     if validar_dados(data, Post.campos_obrigatorios()) == False:
         return jsonify({"error": "Preencha os campos obrigatórios"}), 400
 
@@ -77,10 +83,9 @@ def atualizar_post(id):
     hashtags_entidades = hashtagRepository.processar_hashtags(hashtags_strings)
 
     if hashtags_entidades:
-        # setattr(post, "hashtags", hashtags_entidades) # Acho que também dava pra fazer post.hashtags = hashtags_entidades
         post.hashtags = hashtags_entidades
 
     postRepository.save(post)
 
-    return jsonify({"message": "Post atualizado com sucesso!!!"}), 200
+    return jsonify({"message": "Post atualizado com sucesso"}), 200
 
