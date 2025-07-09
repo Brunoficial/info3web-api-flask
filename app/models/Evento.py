@@ -4,7 +4,7 @@ from datetime import datetime
 class Evento(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(60), nullable=False)
-    descricao = db.Column(db.String(1000), nullable=False)
+    descricao = db.Column(db.String(1000), nullable=True)
     data_evento =  db.Column(db.String(12), nullable=False)
     data_postagem = db.Column(db.DateTime, nullable=False, default=datetime.now())
 

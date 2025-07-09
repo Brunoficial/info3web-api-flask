@@ -6,11 +6,6 @@ from ..utils import *
 
 authBP = Blueprint("auth", __name__, url_prefix="/auth")
 
-def validar_user(data):
-    valid = Usuario.validate_data(data)
-    if valid == False:
-        abort(400, description="Preencha os campos")
-
 @authBP.route("/login", methods=["POST"])
 def login():
     matricula = request.get_json().get("matricula")
@@ -26,21 +21,28 @@ def login():
 
     session.clear()
     session['usuario_id'] = usuarioLogado.id
+    
     return jsonify({"usuario": usuarioLogado.to_dict(), "token": create_access_token(identity=matricula)})
     
 
 @authBP.route("/registro", methods=["POST"])
 def registro():
     data = request.get_json()
-    if not validar_dados(Usuario.campos_obrigatorios(), data):
+
+    if validar_dados(Usuario.campos_obrigatorios(), data) == False:
         return jsonify({"error": "Preencha os campos obrigatórios"}), 400
 
-    usuarioBancoEmail = usuarioRepository.find_by_email(data.get("email"))
-    usuarioBancoMatricula = usuarioRepository.find_by_matricula(data.get("matricula"))
+    usuario_banco_email = usuarioRepository.find_by_email(data.get("email"))
+    usuario_banco_matricula = usuarioRepository.find_by_matricula(data.get("matricula"))
     
-    if usuarioBancoMatricula or usuarioBancoEmail:
-        return jsonify({"error": "Matrícula e/ou email já registrados"}), 409
+    if usuario_banco_matricula and usuario_banco_email:
+        return jsonify({"error": "Matrícula e email já registrados"}), 409
 
+    if usuario_banco_matricula:
+        return jsonify({"error": "Matrícula já registrada"}), 409
+    
+    if usuario_banco_email:
+        return jsonify({"error": "Email já registrado"}), 409
 
     novoUsuario = Usuario(data)
     usuarioRepository.save(novoUsuario)

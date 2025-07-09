@@ -15,7 +15,7 @@ def listar_posts():
 
     posts = serializar_itens(posts_do_banco)
     if not posts:
-        return jsonify({"error": "Nenhum post encontrado"}), 404
+        return jsonify(""), 204
     
     return jsonify(posts), 200
 
@@ -33,6 +33,7 @@ def listar_por_hashtag(hashtag):
 # @jwt_required()
 def criar_post():
     data = request.get_json()
+
     if validar_dados(data, Post.campos_obrigatorios()) == False:
         return jsonify({"error": "Preencha os campos obrigatórios"}), 400
 
@@ -77,7 +78,7 @@ def atualizar_post(id):
     if validar_dados(data, Post.campos_obrigatorios()) == False:
         return jsonify({"error": "Preencha os campos obrigatórios"}), 400
 
-    editar_dados(Post.campos_obrigatorios(), data, post)
+    editar_dados(Post.campos_editaveis(), data, post)
 
     hashtags_strings = data.get("hashtags")
     hashtags_entidades = hashtagRepository.processar_hashtags(hashtags_strings)

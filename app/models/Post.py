@@ -41,6 +41,10 @@ class Post(db.Model):
     @staticmethod
     def campos_obrigatorios():
         return ["titulo", "conteudo", "autor_id"]
+    
+    @staticmethod
+    def campos_editaveis():
+        return ["titulo", "conteudo"]
 
 
 

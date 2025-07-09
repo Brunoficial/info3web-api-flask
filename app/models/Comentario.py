@@ -28,3 +28,7 @@ class Comentario(db.Model):
     def campos_obrigatorios():
         return ["conteudo"]
     
+    @staticmethod
+    def campos_editaveis():
+        return ["conteudo"]
+    

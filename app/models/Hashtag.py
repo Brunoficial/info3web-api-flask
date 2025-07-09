@@ -15,9 +15,3 @@ class Hashtag(db.Model):
             "nome": self.nome
         }
     
-    @staticmethod
-    def validate_data(data):
-        campos = ["nome"]
-        for campo in campos:
-            if not data.get(campo):
-                return False

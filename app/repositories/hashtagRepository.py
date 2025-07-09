@@ -1,10 +1,6 @@
 from ..config.db import db
 from ..models import Hashtag
 
-def save(hashtags):
-    db.session.add(hashtags)
-    db.session.commit()
-
 def processar_hashtags(hashtags_strings):
     hashtags_do_post = []
 
@@ -24,6 +20,11 @@ def find_by_nome(nome:str):
     hashtag = db.session.query(Hashtag).filter_by(nome=nome).first()
     
     return hashtag
+
+def save(hashtags):
+    db.session.add(hashtags)
+    db.session.commit()
+
 
 
         

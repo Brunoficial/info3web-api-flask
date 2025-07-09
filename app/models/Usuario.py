@@ -40,6 +40,10 @@ class Usuario(db.Model):
     @staticmethod
     def campos_obrigatorios():
         return ["nome", "email", "senha", "matricula"]
+    
+    @staticmethod
+    def campos_editaveis():
+        return("nome", "email", "senha", "matricula", "data_nascimento", "bio")
 
 
     
