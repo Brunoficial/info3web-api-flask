@@ -57,7 +57,7 @@ def editar_comentario(comentario_id):
     if validar_dados(data, Comentario.campos_obrigatorios()) == False:
         return jsonify({"error": "Preencha os campos obrigatórios"}), 400
 
-    if editar_dados(Comentario.campos_obrigatorios(), data, comentario): 
+    if editar_dados(Comentario.campos_editaveis(), data, comentario): 
         comentarioRepository.save(comentario)
         return jsonify({"message": "Comentário editado com sucesso!"}), 200
     
