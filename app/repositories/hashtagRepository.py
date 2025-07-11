@@ -6,8 +6,9 @@ def processar_hashtags(hashtags_strings):
 
     for nome in hashtags_strings:
         hashtag_banco = find_by_nome(nome)
+
         if not hashtag_banco:
-            hashtag_banco = Hashtag(nome=nome)
+            hashtag_banco = Hashtag(nome=nome) # Transforma a string hashtag em um objeto
             save(hashtag_banco)
             
         hashtags_do_post.append(hashtag_banco)
@@ -21,8 +22,8 @@ def find_by_nome(nome:str):
     
     return hashtag
 
-def save(hashtags):
-    db.session.add(hashtags)
+def save(hashtag):
+    db.session.add(hashtag)
     db.session.commit()
 
 

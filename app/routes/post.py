@@ -46,6 +46,8 @@ def criar_post():
     postRepository.save(novoPost)
     return jsonify({"message":"Post criado com sucesso!"}), 200
 
+
+
 @postBP.route("/deletar/<int:id>", methods=["DELETE"])
 # @jwt_required()
 def deletar_post(id):
@@ -61,32 +63,37 @@ def deletar_post(id):
     postRepository.delete(post)
     return jsonify({"message": "Post deletado com sucesso"}), 200
 
+
+
 @postBP.route("/atualizar/<int:id>", methods=["PATCH"])
 # @jwt_required()
 def atualizar_post(id):
     post = postRepository.find_by_id(id)
-    usuario_logado = get_usuario_logado()
 
     if not post:
         return jsonify({"error": "Nenhum post encontrado"}), 404
     
+    usuario_logado = get_usuario_logado()
+
     if post.autor_id != usuario_logado:
-        return jsonify({"error": "Você não tem permissão para deletar o post de outra pessoa"}), 403
+        return jsonify({"error": "Você não tem permissão para editar o post de outra pessoa"}), 403
 
     data = request.get_json()
 
     if validar_dados(data, Post.campos_obrigatorios()) == False:
         return jsonify({"error": "Preencha os campos obrigatórios"}), 400
 
-    editar_dados(Post.campos_editaveis(), data, post)
+    campos_alterados = editar_dados(Post.campos_editaveis(), data, post) # Retorna True se houver mudança
 
     hashtags_strings = data.get("hashtags")
     hashtags_entidades = hashtagRepository.processar_hashtags(hashtags_strings)
 
     if hashtags_entidades:
         post.hashtags = hashtags_entidades
+        hashtags_alteradas = True
 
-    postRepository.save(post)
+    if campos_alterados or hashtags_alteradas:
+        postRepository.save(post)
+        return jsonify({"message": "Post atualizado com sucesso"}), 200
 
-    return jsonify({"message": "Post atualizado com sucesso"}), 200
-
+    return jsonify({"message": "Post não foi alterado"}), 200

@@ -30,8 +30,6 @@ def criar_eventos():
 
     return jsonify({"message":"Evento criado com sucesso!"}), 200
 
-@eventoBP.route("/deletar", methods=["DELETE"])
-
 
 
 @eventoBP.route("/deletar/<int:id>", methods=["DELETE"])
@@ -51,11 +49,12 @@ def deletar_evento(id):
 # @jwt_required()
 def atualizar_evento(id):
     evento = eventoRepository.find_by_id(id)
+
     if not evento:
         return jsonify({"error": "Nenhum evento encontrado"}), 404
     
     data = request.get_json()
-
+    
     if validar_dados(data, Evento.campos_obrigatorios()) == False:
         return jsonify({"error": "Preencha os campos obrigatórios"}), 400
 
