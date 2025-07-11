@@ -1,25 +1,12 @@
-from ..config.db import db
-from ..models.Comentario import Comentario
-from ..models import Post
-from ..repositories import comentarioRepository, postRepository
-from ..utils import *
 from flask import jsonify, request, Blueprint
-
+from ..services import ComentarioService
 
 comentarioBP = Blueprint("comentario", __name__, url_prefix="/comentario")
 
 @comentarioBP.route("/listar/<int:post_id>", methods=["GET"])
 def listar_comentarios(post_id):
-    post = postRepository.find_by_id(post_id)
-    if not post:
-        return jsonify({"error": "Post não encontrado"}), 404
-    
-    # comentarios = [comentario.to_dict() for comentario in post.comentarios]
-    comentarios = serializar_itens(post.comentarios)
-    if not comentarios:
-        return jsonify(""), 204
-
-    return jsonify(comentarios), 200
+   comentarios = ComentarioService.listar_comentarios(post_id)
+   return comentarios
     
 @comentarioBP.route("/criar/<int:post_id>", methods=["POST"])
 def criar_comentario(post_id):

@@ -1,6 +1,6 @@
-from .auth import authBP
+from .AuthRoutes import authBP
 from .post import postBP
-from .comentario import comentarioBP
+from .ComentarioRoutes import comentarioBP
 from .evento import eventoBP
 
 def register_routes(app):
