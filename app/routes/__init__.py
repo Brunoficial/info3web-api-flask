@@ -1,7 +1,7 @@
 from .AuthRoutes import authBP
-from .post import postBP
+from .PostRoutes import postBP
 from .ComentarioRoutes import comentarioBP
-from .evento import eventoBP
+from .EventoRoutes import eventoBP
 
 def register_routes(app):
     app.register_blueprint(authBP)

@@ -18,7 +18,8 @@ class Evento(db.Model):
             "id": self.id,
             "nome": self.nome,
             "descricao": self.descricao,
-            "data_evento": self.data_evento
+            "data_evento": self.data_evento,
+            "data_postagem": self.data_postagem
         }
     
     @staticmethod

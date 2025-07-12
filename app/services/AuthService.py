@@ -21,8 +21,8 @@ def login(data: dict):
         session['usuario_id'] = usuarioLogado.id
         
         return jsonify({"usuario": usuarioLogado.to_dict(), "token": create_access_token(identity=matricula)})
-    except Exception:
-        return jsonify({"detail": "Erro desconhecido ao processar login"}), 500
+    except Exception as e:
+        return jsonify({"detail": f"Erro desconhecido ao processar login: {e}"}), 500
 
 def registro(data):
     try:
