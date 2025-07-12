@@ -12,10 +12,10 @@ def login(data: dict):
         usuarioLogado = UsuarioRepository.find_by_matricula(matricula)
 
         if not usuarioLogado:
-            return jsonify ({"error": "Usuário inexistente"}), 404
+            return jsonify ({"detail": "Usuário inexistente"}), 404
 
         if not usuarioLogado.check_password(senha):
-            return jsonify({"error": "Senha incorreta"}), 403
+            return jsonify({"detail": "Senha incorreta"}), 403
 
         session.clear()
         session['usuario_id'] = usuarioLogado.id
