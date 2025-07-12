@@ -1,6 +1,6 @@
 from ..config.db import db
-from ..config.extensions import bcrypt
-from datetime import datetime, date
+from ..config.bcyptConfig import bcrypt
+from datetime import datetime
 
 class Usuario(db.Model):
     __tablename__ = "usuarios"

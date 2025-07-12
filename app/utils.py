@@ -1,5 +1,5 @@
 from flask import session, g
-from .repositories import usuarioRepository
+from .repositories import UsuarioRepository
 
 def serializar_itens(itens_do_banco):
     itens = [item.to_dict() for item in itens_do_banco]
@@ -9,6 +9,7 @@ def validar_dados(data, campos):
     for campo in campos:
         if not data.get(campo):
             return False
+    return True
         
 def editar_dados(campos, data, objeto):
     novos_valores=[]
@@ -34,7 +35,7 @@ def get_usuario_logado():
     if usuario_id == None:
         g.user = None
     else: 
-        g.user = usuarioRepository.find_by_id(usuario_id)
+        g.user = UsuarioRepository.find_by_id(usuario_id)
 
 
 

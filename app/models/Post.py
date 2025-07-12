@@ -27,17 +27,16 @@ class Post(db.Model):
             "conteudo": self.conteudo,
             "data": self.data, 
             "autor_id": self.autor_id,
-            "hashtags": self.get_hashtags()
+            "hashtags": self.get_hashtags(),
+            "curtidas": self.curtidas
         }
     
     def get_hashtags(self):
-        hashtags_do_post = []
-
-        for hashtag in self.hashtags:
-            hashtags_do_post.append(hashtag.to_dict())
-
-        return hashtags_do_post
+        return [hashtag.nome for hashtag in self.hashtags]
     
+    def get_comentarios(self):
+        return [comentario.to_dict() for comentario in self.comentarios]
+
     @staticmethod
     def campos_obrigatorios():
         return ["titulo", "conteudo", "autor_id"]

@@ -21,7 +21,8 @@ class Comentario(db.Model):
             "id": self.id,
             "conteudo": self.conteudo,
             "autor_id": self.autor_id,
-            "post_id": self.post_id
+            "post_id": self.post_id,
+            "curtidas": self.curtidas
         }
     
     @staticmethod
