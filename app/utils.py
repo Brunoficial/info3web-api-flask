@@ -29,6 +29,7 @@ def editar_dados(campos, data, objeto):
 
     return True
 
+
 def get_usuario_logado():
     usuario_id = session.get('usuario_id')
 

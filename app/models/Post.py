@@ -13,6 +13,7 @@ class Post(db.Model):
     curtidas = db.Column(db.Integer, default=0)
     hashtags = db.relationship('Hashtag', secondary='posts_hashtags', backref='posts', lazy='select')
     comentarios = db.relationship('Comentario', backref='post', cascade='all, delete', lazy='select')
+    imagens = db.relationship('Imagem', backref='post', cascade='all, delete', lazy='select')
     
 
     def __init__(self, data):
@@ -28,7 +29,8 @@ class Post(db.Model):
             "data": self.data, 
             "autor_id": self.autor_id,
             "hashtags": self.get_hashtags(),
-            "curtidas": self.curtidas
+            "curtidas": self.curtidas,
+            "imagens": self.get_imagens()
         }
     
     def get_hashtags(self):
@@ -36,6 +38,9 @@ class Post(db.Model):
     
     def get_comentarios(self):
         return [comentario.to_dict() for comentario in self.comentarios]
+    
+    def get_imagens(self):
+        return [imagem.to_dict() for imagem in self.imagens]
 
     @staticmethod
     def campos_obrigatorios():
