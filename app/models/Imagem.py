@@ -10,4 +10,4 @@ class Imagem(db.Model):
         self.imagem = imagem
 
     def to_dict(self):
-        return url_for("imagem", id=self.id, _external=True)
+        return url_for("post.imagem", id=self.id, _external=True)

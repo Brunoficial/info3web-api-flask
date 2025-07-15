@@ -1,7 +1,9 @@
-from ..models import Post
-from flask import jsonify
+import io
+from ..models import Post, Imagem
+from flask import jsonify, send_file
 from ..repositories import PostRepository, HashtagRepository
 from ..utils import *
+from ..config.db import db
 
 def listar_posts():
     try:
@@ -27,14 +29,15 @@ def listar_por_hashtag(hashtag):
     except Exception as e:
       return jsonify({"detail": f"Erro desconhecido ao listar posts por hashtag: {e}"}), 500
 
-def criar_post(data):
+def criar_post(data, imagens):
     try:
       if not validar_dados(data, Post.campos_obrigatorios()):
         return jsonify({"detail": "Preencha os campos obrigatórios"}), 400
 
       novoPost = Post(data)
-      lidar_com_hashtags(data.get("hashtags"), novoPost)
-      
+      lidar_com_hashtags([hashtag.strip() for hashtag in data.get("hashtags").split(",")], novoPost)
+      lidar_com_imagens(imagens, novoPost)
+
       PostRepository.save(novoPost)
       return jsonify({"detail":"Post criado com sucesso!"}), 200
     except Exception as e:
@@ -83,3 +86,20 @@ def lidar_com_hashtags(hashtags_strings, post):
 
     if hashtags_entidades:
         post.hashtags = hashtags_entidades
+
+def lidar_com_imagens(imagens, post):
+   imagens_do_post = []
+   for imagem in imagens:
+      imagem_obj = Imagem(imagem.read())
+      post.imagens.append(imagem_obj)
+      imagens_do_post.append(imagem_obj)
+
+   db.session.add_all(imagens_do_post)
+
+def buscar_id_imagem(id):
+    imagem = db.session.query(Imagem).filter_by(id=id).first()
+    
+    return send_file(
+        io.BytesIO(imagem.imagem),
+        mimetype="image/jpeg"
+    )

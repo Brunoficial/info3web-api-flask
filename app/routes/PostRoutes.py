@@ -16,7 +16,14 @@ def listar_por_hashtag(hashtag):
 @postBP.route("/criar", methods=["POST"])
 @jwt_required()
 def criar_post():
-    return PostService.criar_post(request.get_json())
+    data = request.form
+    files = request.files.getlist("imagens")
+    return PostService.criar_post(data, files)
+
+@postBP.route("/imagem/<int:id>")
+def imagem(id):
+    return PostService.buscar_id_imagem(id)
+    
 
 @postBP.route("/deletar/<int:id>", methods=["DELETE"])
 @jwt_required()
