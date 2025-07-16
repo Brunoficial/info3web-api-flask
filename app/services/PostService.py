@@ -60,6 +60,7 @@ def deletar_post(id):
       return jsonify({"detail": f"Erro desconhecido ao deletar post: {e}"}), 500
  
 def editar_post(id, data):
+    
     try:
       post = PostRepository.find_by_id(id)
       usuario_logado = get_usuario_logado()

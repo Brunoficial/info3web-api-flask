@@ -1,0 +1,4 @@
+# Ignorando tanto o ambiente virtual quanto o .env com as chaves hiper mega secretas que ninguém pode
+# descobrir 
+.env
+.venv
