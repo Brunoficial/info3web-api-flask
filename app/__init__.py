@@ -4,6 +4,7 @@ from .config.db import db
 from .routes import register_routes
 from dotenv import load_dotenv
 from .config import init_configs
+from flask_cors import CORS
 
 load_dotenv()
 
@@ -11,6 +12,7 @@ def createApp() :
     app = Flask(__name__)
     init_configs(app)
     register_routes(app)
+    CORS(app)
 
     app.secret_key = os.getenv("APP_SECRET_KEY")
 
