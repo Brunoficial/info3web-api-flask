@@ -6,7 +6,6 @@ class Post(db.Model):
     __tablename__ = "posts"
 
     id = db.Column(db.Integer, primary_key=True)
-    titulo = db.Column(db.String(30), nullable=False)
     conteudo = db.Column(db.String(1000), nullable=False)
     data = db.Column (db.DateTime, nullable=False, default=datetime.now())
     autor_id = db.Column(db.ForeignKey("usuarios.id"), nullable=False)
@@ -17,14 +16,12 @@ class Post(db.Model):
     
 
     def __init__(self, data):
-        self.titulo = data.get("titulo") 
         self.conteudo = data.get("conteudo") 
         self.autor_id = data.get("autor_id")
 
     def to_dict(self):
         return {
             "id": self.id,
-            "titulo": self.titulo,
             "conteudo": self.conteudo,
             "data": self.data, 
             "autor_id": self.autor_id,
@@ -44,11 +41,11 @@ class Post(db.Model):
 
     @staticmethod
     def campos_obrigatorios():
-        return ["titulo", "conteudo", "autor_id"]
+        return ["conteudo", "autor_id"]
     
     @staticmethod
     def campos_editaveis():
-        return ["titulo", "conteudo"]
+        return ["conteudo"]
 
 
 
