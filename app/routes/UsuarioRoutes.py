@@ -7,7 +7,7 @@ usuarioBP = Blueprint("usuario", __name__, url_prefix="/usuario")
 def listar_usuarios():
     return UsuarioService.listar_usuarios()
 
-@usuarioBP.route("/encontrar_por_id/<int:id>", methodos=["GET"])
+@usuarioBP.route("/encontrar_pelo_id/<int:id>", methods=["GET"])
 def encontrar_pelo_id(id):
     return UsuarioService.encontrar_pelo_id(id)
 
