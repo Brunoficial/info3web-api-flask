@@ -9,6 +9,11 @@ postBP = Blueprint("post", __name__, url_prefix="/post")
 def listar_posts():
     return PostService.listar_posts()
 
+@postBP.route("/listar_por_autor_id/<int:id>", methods=["GET"])
+@jwt_required()
+def listar_posts_por_autor(id):
+    return PostService.listar_posts_por_autor(id)
+
 @postBP.route("/listar_por_hashtag/<string:hashtag>", methods=["GET"])
 def listar_por_hashtag(hashtag):
     return PostService.listar_por_hashtag(hashtag)

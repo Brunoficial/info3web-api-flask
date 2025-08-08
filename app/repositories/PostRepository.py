@@ -6,6 +6,10 @@ def list_posts():
     posts = db.session.query(Post).all()
     return posts
 
+def find_by_autor(id):
+    posts = db.session.query(Post).filter_by(autor_id=id).all()
+    return posts
+
 def find_by_id(id):
     post = db.session.query(Post).filter_by(id=id).first()
     return post
