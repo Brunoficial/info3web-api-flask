@@ -10,9 +10,9 @@ load_dotenv()
 
 def createApp() :
     app = Flask(__name__)
+    CORS(app, resources={r"/*": {"origins": "*"}})
     init_configs(app)
     register_routes(app)
-    CORS(app)
 
     app.secret_key = os.getenv("APP_SECRET_KEY")
 

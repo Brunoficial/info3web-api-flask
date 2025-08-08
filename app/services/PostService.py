@@ -35,7 +35,9 @@ def criar_post(data, imagens):
         return jsonify({"detail": "Preencha os campos obrigatórios"}), 400
 
       novoPost = Post(data)
-      lidar_com_hashtags([hashtag.strip() for hashtag in data.get("hashtags").split(",")], novoPost)
+      if (data.get("hashtags")):
+        lidar_com_hashtags([hashtag.strip() for hashtag in data.get("hashtags").split(",")], novoPost)
+
       lidar_com_imagens(imagens, novoPost)
 
       PostRepository.save(novoPost)
@@ -75,7 +77,8 @@ def editar_post(id, data):
           return jsonify({"detail": "Preencha os campos obrigatórios"}), 400
 
       editar_dados(Post.campos_editaveis(), data, post)
-      lidar_com_hashtags(data.get("hashtags"), post)
+      if (data.get("hashtags")):
+         lidar_com_hashtags(data.get("hashtags"), post)
 
       PostRepository.save(post)
       return jsonify({"detail": "Post atualizado com sucesso"}), 200
