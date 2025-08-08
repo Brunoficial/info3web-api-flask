@@ -17,6 +17,20 @@ def listar_posts():
     except Exception as e:
         return jsonify({"detail": f"Erro desconhecido ao listar posts: {e}"}), 500
 
+def listar_posts_por_autor(id):
+    try:
+        posts_do_banco = PostRepository.find_by_autor(id)
+
+        posts = serializar_itens(posts_do_banco)
+
+        if not posts:
+            return jsonify({"detail": "Nenhum post encontrado"}), 204
+        
+        return jsonify(posts), 200
+    except Exception as e:
+        return jsonify({"detail": f"Erro desconhecido ao listar posts: {e}"}), 500
+
+
 def listar_por_hashtag(hashtag):
     try:
       posts_do_banco = PostRepository.find_by_hashtag(hashtag)
