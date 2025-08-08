@@ -1,6 +1,5 @@
 from ..config.db import db 
 from datetime import date, datetime
-from flask import jsonify
 
 class Post(db.Model):
     __tablename__ = "posts"
@@ -27,7 +26,8 @@ class Post(db.Model):
             "autor_id": self.autor_id,
             "hashtags": self.get_hashtags(),
             "curtidas": self.curtidas,
-            "imagens": self.get_imagens()
+            "imagens": self.get_imagens(),
+            "autor_nome": self.autor.nome if self.autor else None
         }
     
     def get_hashtags(self):

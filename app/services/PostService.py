@@ -44,7 +44,7 @@ def criar_post(data, imagens):
       return jsonify({"detail":"Post criado com sucesso!"}), 200
     except Exception as e:
       return jsonify({"detail": f"Erro desconhecido ao criar post: {e}"}), 500
- 
+                                                                  
 def deletar_post(id):
     try:
       post = PostRepository.find_by_id(id)
